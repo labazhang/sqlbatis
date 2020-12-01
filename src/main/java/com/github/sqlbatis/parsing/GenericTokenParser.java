@@ -1,12 +1,12 @@
 /**
  * Copyright 2020-2020 the original author or authors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 package com.github.sqlbatis.parsing;
+
+import com.github.sqlbatis.mapping.ParameterMapping;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 通用的 Token 解析器
@@ -38,22 +43,28 @@ public class GenericTokenParser {
         this.handler = handler;
     }
 
+    public String parse(String text) {
+        return parseForResult(text).getSql();
+    }
+
     /**
      * ${alias} => 将动态值替换为具体值
      *
      * @param text 需要替换的数据
      * @return 替换后的数据
      */
-    public String parse(String text) {
+    public TokenResult parseForResult(String text) {
         if (text == null || text.isEmpty()) {
-            return "";
+            return new TokenResult("");
         }
         // search open token
         // 寻找开始的 openToken 的位置
         int start = text.indexOf(openToken);
         if (start == -1) {
-            return text;
+            return new TokenResult(text);
         }
+
+        List<String> placeHolderParams = new ArrayList<>();
         char[] src = text.toCharArray();
         int offset = 0;
         final StringBuilder builder = new StringBuilder();
@@ -108,6 +119,7 @@ public class GenericTokenParser {
                 } else {
                     // closeToken 找到，将 expression 提交给 handler 处理 ，并将处理结果添加到 builder 中
                     builder.append(handler.handleToken(expression.toString()));
+                    placeHolderParams.add(expression.toString());
                     // 修改 offset
                     offset = end + closeToken.length();
                 }
@@ -119,6 +131,29 @@ public class GenericTokenParser {
         if (offset < src.length) {
             builder.append(src, offset, src.length - offset);
         }
-        return builder.toString();
+        return new TokenResult(builder.toString(), placeHolderParams);
+    }
+
+    public static class TokenResult {
+        private String sql;
+        private List<String> placeHolderParams;
+
+        public TokenResult(String sql) {
+            this.sql = sql;
+            placeHolderParams = new ArrayList<>();
+        }
+
+        public TokenResult(String sql, List<String> placeHolderParams) {
+            this.sql = sql;
+            this.placeHolderParams = placeHolderParams;
+        }
+
+        public String getSql() {
+            return sql;
+        }
+
+        public List<String> getPlaceHolderParams() {
+            return placeHolderParams;
+        }
     }
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2020-2020 the original author or authors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -129,7 +129,7 @@ public class ForEachSqlNode implements SqlNode {
             }
             // 7. 执行 contents 的应用，此处 contents 就是上述示例的 " #{item}" 。
             //另外，进一步将 context 对象，封装成 FilteredDynamicContext 对象。
-            contents.apply(new FilteredDynamicContext(context, index, item, uniqueNumber));
+            contents.apply(new FilteredDynamicContext(context, index, item, collectionExpression, uniqueNumber));
             // 8. 判断 prefix 是否已经插入，如果是，则 first 会被设置为 false 。
             if (first) {
                 first = !((PrefixedContext) context).isPrefixApplied();
@@ -194,12 +194,17 @@ public class ForEachSqlNode implements SqlNode {
          * 集合项 {@link ForEachSqlNode#item}
          */
         private final String item;
+        /**
+         * 集合名 {@link ForEachSqlNode#collectionExpression}
+         */
+        private final String collection;
 
-        public FilteredDynamicContext(DynamicContext delegate, String itemIndex, String item, int i) {
+        public FilteredDynamicContext(DynamicContext delegate, String itemIndex, String item, String collection, int i) {
             super(null);
             this.delegate = delegate;
             this.index = i;
             this.itemIndex = itemIndex;
+            this.collection = collection;
             this.item = item;
         }
 
@@ -222,12 +227,12 @@ public class ForEachSqlNode implements SqlNode {
         public void appendSql(String sql) {
             GenericTokenParser parser = new GenericTokenParser("#{", "}", content -> {
                 // 将对 item 的访问，替换成 itemizeItem(item, index) 。
-                String newContent = content.replaceFirst("^\\s*" + item + "(?![^.,:\\s])", itemizeItem(item, index));
+                String newContent = content.replaceFirst("^\\s*" + item + "(?![^.,:\\s])", itemizeItem(collection + "_" + item, index));
                 // 将对 itemIndex 的访问，替换成 itemizeItem(itemIndex, index) 。
                 if (itemIndex != null && newContent.equals(content)) {
                     newContent = content.replaceFirst("^\\s*" + itemIndex + "(?![^.,:\\s])", itemizeItem(itemIndex, index));
                 }
-                // 返回
+                // 返回 #{__frch_collection_item_0}
                 return "#{" + newContent + "}";
             });
 

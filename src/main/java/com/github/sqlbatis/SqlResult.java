@@ -33,16 +33,16 @@ public class SqlResult {
     /**
      * ordered param, the order according to the order of #{xxx} parameter in sql
      * {
-     *     1: "value1",
-     *     2: 2,
-     *     3: true,
-     *     4: 3.1415926,
+     * 1: "value1",
+     * 2: 2,
+     * 3: true,
+     * 4: 3.1415926,
      * }
      * the start number is 1, because the index of param in PrepareStatement sql is start from 1
      */
-    private Map<String, Object> params;
+    private Map<Integer, Object> params;
 
-    public SqlResult(String sql, Map<String, Object> params) {
+    public SqlResult(String sql, Map<Integer, Object> params) {
         this.sql = sql;
         this.params = params;
     }
@@ -59,11 +59,16 @@ public class SqlResult {
         this.sql = sql;
     }
 
-    public Map<String, Object> getParams() {
+    public Map<Integer, Object> getParams() {
+        for (Integer k : params.keySet()) {
+            if (params.get(k) instanceof String) {
+                params.replace(k, "'" + params.get(k) + "'");
+            }
+        }
         return params;
     }
 
-    public void setParams(Map<String, Object> params) {
+    public void setParams(Map<Integer, Object> params) {
         this.params = params;
     }
 }

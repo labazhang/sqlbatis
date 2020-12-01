@@ -46,9 +46,9 @@ public class SqlSourceBuilder extends BaseBuilder {
         // 2. 创建 GenericTokenParser 对象，并指定左右token符号，作为站位符查找边界。
         GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
         // 3. 执行解析，并会调用 ParameterMappingTokenHandler 的 handleToken 方法
-        String sql = parser.parse(originalSql);
+        GenericTokenParser.TokenResult result = parser.parseForResult(originalSql);
         // 4. 创建 StaticSqlSource 对象
-        return new StaticSqlSource(sql);
+        return new StaticSqlSource(result.getSql(),result.getPlaceHolderParams());
     }
 
     /**

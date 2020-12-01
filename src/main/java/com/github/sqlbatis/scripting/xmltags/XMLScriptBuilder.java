@@ -87,8 +87,10 @@ public class XMLScriptBuilder extends BaseBuilder {
         // 创建 SqlSource 对象
         SqlSource sqlSource;
         if (isDynamic) {
+            // 包含 ${} 或 xml 标签的SQL
             sqlSource = new DynamicSqlSource(rootSqlNode);
         } else {
+            // 仅有 #{} 或 不需要处理的SQL
             sqlSource = new RawSqlSource(rootSqlNode);
         }
         return sqlSource;

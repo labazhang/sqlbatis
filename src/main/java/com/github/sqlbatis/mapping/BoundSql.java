@@ -1,12 +1,12 @@
 /**
  * Copyright 2020-2020 the original author or authors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,9 @@ package com.github.sqlbatis.mapping;
 
 import com.github.sqlbatis.SqlResult;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,17 +46,22 @@ public class BoundSql {
     /**
      * 排序后的参数 {@link SqlResult#setParams(Map)}
      */
-    private Map<String, Object> orderedParams;
+    private Map<Integer, Object> orderedParams;
 
     public BoundSql(String sql) {
+        this(sql, new HashMap<>());
+    }
+
+    public BoundSql(String sql, Map<Integer, Object> orderedParams) {
         this.sql = sql;
+        this.orderedParams = orderedParams;
     }
 
     public String getSql() {
         return sql;
     }
 
-    public Map<String, Object> getOrderedParams() {
+    public Map<Integer, Object> getOrderedParams() {
         return orderedParams;
     }
 }
