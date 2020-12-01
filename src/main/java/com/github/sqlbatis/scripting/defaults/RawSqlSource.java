@@ -37,18 +37,17 @@ public class RawSqlSource implements SqlSource {
      */
     private final SqlSource sqlSource;
 
-    public RawSqlSource(SqlNode rootSqlNode, Class<?> parameterType) {
+    public RawSqlSource(SqlNode rootSqlNode) {
         // 1. 获得 Sql：getSql()
-        this(getSql(rootSqlNode), parameterType);
+        this(getSql(rootSqlNode));
     }
 
     /**
      * 创建 SqlSource，并将SQL中替换 #{} => ?
      *
      * @param sql           sql
-     * @param parameterType 参数类型
      */
-    public RawSqlSource(String sql, Class<?> parameterType) {
+    public RawSqlSource(String sql) {
         // 2. 创建 SqlSourceBuilder 对象
         SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder();
         // 3. 获得 SqlSource 对象

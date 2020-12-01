@@ -43,29 +43,21 @@ public class XMLScriptBuilder extends BaseBuilder {
      * 是否为动态 SQL
      */
     private boolean isDynamic;
-    /**
-     * SQL 方法类型
-     */
-    private final Class<?> parameterType;
+
     /**
      * NodeHandler 的映射
      */
     private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
 
-    public XMLScriptBuilder(XNode context) {
-        this(context, null);
-    }
 
     /**
      * 创建 XMLScriptBuilder 对象
      *
      * @param context       xml的节点信息
-     * @param parameterType 参数类型
      */
-    public XMLScriptBuilder(XNode context, Class<?> parameterType) {
+    public XMLScriptBuilder(XNode context) {
         super();
         this.context = context;
-        this.parameterType = parameterType;
         // 初始化 nodeHandlerMap 属性
         initNodeHandlerMap();
     }
@@ -97,7 +89,7 @@ public class XMLScriptBuilder extends BaseBuilder {
         if (isDynamic) {
             sqlSource = new DynamicSqlSource(rootSqlNode);
         } else {
-            sqlSource = new RawSqlSource(rootSqlNode, parameterType);
+            sqlSource = new RawSqlSource(rootSqlNode);
         }
         return sqlSource;
     }
