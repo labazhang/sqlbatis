@@ -60,11 +60,6 @@ public class SqlResult {
     }
 
     public Map<Integer, Object> getParams() {
-        for (Integer k : params.keySet()) {
-            if (params.get(k) instanceof String) {
-                params.replace(k, "'" + params.get(k) + "'");
-            }
-        }
         return params;
     }
 

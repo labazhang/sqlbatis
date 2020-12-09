@@ -64,6 +64,9 @@ public class StaticSqlSource implements SqlSource {
         Map<Integer, Object> orderedParams = new HashMap<>(placeHolderParams.size());
         if (placeHolderParams.size() > 0) {
             Map object = (Map) parameterObject;
+            int lastIndex = 0;
+            int nowTermCount = 0;
+            String lastStr = "";
             for (int i = 0; i < placeHolderParams.size(); i++) {
                 String placeHolderParam = placeHolderParams.get(i);
                 // 处理 foreach
@@ -74,7 +77,15 @@ public class StaticSqlSource implements SqlSource {
                     String[] split = placeHolderParam.split("_");
                     int index = Integer.parseInt(split[split.length - 1]);
                     String paramName = split[split.length - 3];
+                    if(!lastStr.equals(paramName)) {
+                        lastIndex = lastIndex + nowTermCount;
+                        lastStr = paramName;
+                        nowTermCount = 1;
+                    } else {
+                        nowTermCount++;
+                    }
                     List list = (List) object.get(paramName);
+                    index = index - lastIndex;
                     if (index <= list.size()) {
                         orderedParams.put(i + 1, list.get(index));
                     } else {
